@@ -1,33 +1,32 @@
-/* WAGA Erdbau – interactions */
+/* WAGA ERDBAU — Brutalist interactions */
 (function () {
   'use strict';
 
-  // Sticky header
-  var header = document.querySelector('[data-header]');
-  var onScrollHeader = function () {
-    if (header) header.classList.toggle('is-scrolled', window.scrollY > 40);
-  };
-  onScrollHeader();
-  window.addEventListener('scroll', onScrollHeader, { passive: true });
-
-  // Scroll progress bar
-  var bar = document.querySelector('.scroll-progress__bar');
-  var onScrollBar = function () {
+  // Scroll progress
+  var bar = document.querySelector('.progress');
+  var onScroll = function () {
     if (!bar) return;
     var max = document.documentElement.scrollHeight - window.innerHeight;
     bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
   };
-  window.addEventListener('scroll', onScrollBar, { passive: true });
-  onScrollBar();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 
-  // Hero parallax
-  var heroBg = document.querySelector('.hero__bg');
-  if (heroBg && window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-    window.addEventListener('scroll', function () {
-      var y = window.scrollY;
-      if (y < window.innerHeight * 1.2) heroBg.style.transform = 'translateY(' + y * 0.35 + 'px)';
-    }, { passive: true });
-  }
+  // Smooth anchor scrolling with header offset (also from other pages)
+  document.querySelectorAll('a[data-anchor]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var href = a.getAttribute('href');
+      var hashIdx = href.indexOf('#');
+      if (hashIdx === -1) return;
+      var id = href.slice(hashIdx + 1);
+      var el = document.getElementById(id);
+      if (!el) return; // andere Seite → normale Navigation
+      ev.preventDefault();
+      var y = el.getBoundingClientRect().top + window.scrollY - 56;
+      window.scrollTo({ top: id === 'top' ? 0 : y, behavior: 'smooth' });
+      history.replaceState(null, '', '/#' + id);
+    });
+  });
 
   // Reveal on scroll
   var revealEls = document.querySelectorAll('.reveal');
@@ -36,22 +35,21 @@
       entries.forEach(function (e) {
         if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
     revealEls.forEach(function (el) { io.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
   }
 
-  // Animated counters
+  // Counters
   var counters = document.querySelectorAll('[data-counter]');
-  var animateCounter = function (el) {
+  var animate = function (el) {
     var target = parseInt(el.getAttribute('data-counter'), 10) || 0;
     var suffix = el.getAttribute('data-suffix') || '';
     var start = null;
-    var dur = 1600;
     var step = function (ts) {
       if (!start) start = ts;
-      var p = Math.min((ts - start) / dur, 1);
+      var p = Math.min((ts - start) / 1500, 1);
       var eased = 1 - Math.pow(1 - p, 3);
       el.textContent = Math.round(target * eased).toLocaleString('de-AT') + (p === 1 ? suffix : '');
       if (p < 1) requestAnimationFrame(step);
@@ -61,22 +59,29 @@
   if ('IntersectionObserver' in window && counters.length) {
     var cio = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) { animateCounter(e.target); cio.unobserve(e.target); }
+        if (e.isIntersecting) { animate(e.target); cio.unobserve(e.target); }
       });
     }, { threshold: 0.4 });
     counters.forEach(function (el) { cio.observe(el); });
   }
 
-  // 3D tilt cards (pointer devices only)
-  if (window.matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)').matches) {
-    document.querySelectorAll('[data-tilt]').forEach(function (card) {
-      card.addEventListener('pointermove', function (ev) {
-        var r = card.getBoundingClientRect();
-        var x = (ev.clientX - r.left) / r.width - 0.5;
-        var y = (ev.clientY - r.top) / r.height - 0.5;
-        card.style.transform = 'perspective(800px) rotateY(' + x * 7 + 'deg) rotateX(' + -y * 7 + 'deg) translateY(-3px)';
+  // Active section → tabbar + header nav
+  var sections = ['top', 'leistungen', 'projekte', 'berichte', 'kontakt'];
+  var links = document.querySelectorAll('.tabs__item, .hd__link');
+  if ('IntersectionObserver' in window && document.body.classList.contains('page-home')) {
+    var current = 'top';
+    var sio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) current = e.target.id || 'top';
       });
-      card.addEventListener('pointerleave', function () { card.style.transform = ''; });
+      links.forEach(function (l) {
+        var href = l.getAttribute('href') || '';
+        l.classList.toggle('is-active', href.indexOf('#' + current) !== -1);
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    sections.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) sio.observe(el);
     });
   }
 
@@ -85,14 +90,13 @@
   if (filterBar) {
     var grid = document.querySelector('[data-project-grid]');
     filterBar.addEventListener('click', function (ev) {
-      var btn = ev.target.closest('.filter-btn');
+      var btn = ev.target.closest('.pfilter__btn');
       if (!btn) return;
-      filterBar.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('is-active'); });
+      filterBar.querySelectorAll('.pfilter__btn').forEach(function (b) { b.classList.remove('is-active'); });
       btn.classList.add('is-active');
       var f = btn.getAttribute('data-filter');
-      grid.querySelectorAll('.project-card').forEach(function (card) {
-        var show = f === '*' || card.getAttribute('data-category') === f;
-        card.classList.toggle('is-hidden', !show);
+      grid.querySelectorAll('.proj').forEach(function (card) {
+        card.classList.toggle('is-hidden', !(f === '*' || card.getAttribute('data-category') === f));
       });
     });
   }
@@ -108,18 +112,18 @@
       items = Array.prototype.slice.call(document.querySelectorAll('[data-lightbox-item]'))
         .filter(function (el) { return !el.classList.contains('is-hidden'); });
     };
-    var open = function (el) {
-      collect();
-      idx = items.indexOf(el);
-      show();
-      lb.hidden = false;
-      document.body.style.overflow = 'hidden';
-    };
     var show = function () {
       var el = items[idx];
       if (!el) return;
       lbImg.src = el.getAttribute('data-full');
       lbCap.textContent = el.getAttribute('data-caption') || '';
+    };
+    var open = function (el) {
+      collect();
+      idx = Math.max(0, items.indexOf(el));
+      show();
+      lb.hidden = false;
+      document.body.style.overflow = 'hidden';
     };
     var close = function () { lb.hidden = true; document.body.style.overflow = ''; };
     document.addEventListener('click', function (ev) {
@@ -136,7 +140,6 @@
       if (ev.key === 'ArrowLeft') { idx = (idx - 1 + items.length) % items.length; show(); }
       if (ev.key === 'ArrowRight') { idx = (idx + 1) % items.length; show(); }
     });
-    // swipe
     var touchX = null;
     lb.addEventListener('touchstart', function (ev) { touchX = ev.touches[0].clientX; }, { passive: true });
     lb.addEventListener('touchend', function (ev) {
@@ -147,25 +150,25 @@
     }, { passive: true });
   }
 
-  // Contact form (async submit)
+  // Contact form async submit
   document.querySelectorAll('[data-contact-form]').forEach(function (form) {
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
       var btn = form.querySelector('button[type="submit"]');
       btn.disabled = true;
-      btn.textContent = 'Wird gesendet …';
+      btn.querySelector('span').textContent = 'Wird gesendet …';
       fetch(form.action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
         body: new URLSearchParams(new FormData(form)).toString(),
       }).then(function (r) { return r.json(); }).then(function () {
-        form.querySelector('.contact-form__success').hidden = false;
+        form.querySelector('.cform__success').hidden = false;
         form.querySelectorAll('input, textarea').forEach(function (i) { i.value = ''; });
-        btn.textContent = '✓ Gesendet';
+        btn.querySelector('span').textContent = '✓ Gesendet';
       }).catch(function () {
         btn.disabled = false;
-        btn.textContent = 'Anfrage absenden';
-        alert('Senden fehlgeschlagen – bitte rufen Sie mich direkt an.');
+        btn.querySelector('span').textContent = 'Anfrage absenden';
+        alert('Senden fehlgeschlagen — bitte rufen Sie direkt an.');
       });
     });
   });
