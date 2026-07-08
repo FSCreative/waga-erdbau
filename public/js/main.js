@@ -1,32 +1,14 @@
-/* WAGA ERDBAU — Brutalist interactions */
+/* WAGA ERDBAU — Premium interactions */
 (function () {
   'use strict';
 
-  // Scroll progress
-  var bar = document.querySelector('.progress');
+  // Header border on scroll
+  var header = document.querySelector('[data-header]');
   var onScroll = function () {
-    if (!bar) return;
-    var max = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
+    if (header) header.classList.toggle('is-scrolled', window.scrollY > 24);
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
-
-  // Smooth anchor scrolling with header offset (also from other pages)
-  document.querySelectorAll('a[data-anchor]').forEach(function (a) {
-    a.addEventListener('click', function (ev) {
-      var href = a.getAttribute('href');
-      var hashIdx = href.indexOf('#');
-      if (hashIdx === -1) return;
-      var id = href.slice(hashIdx + 1);
-      var el = document.getElementById(id);
-      if (!el) return; // andere Seite → normale Navigation
-      ev.preventDefault();
-      var y = el.getBoundingClientRect().top + window.scrollY - 56;
-      window.scrollTo({ top: id === 'top' ? 0 : y, behavior: 'smooth' });
-      history.replaceState(null, '', '/#' + id);
-    });
-  });
 
   // Reveal on scroll
   var revealEls = document.querySelectorAll('.reveal');
@@ -35,7 +17,7 @@
       entries.forEach(function (e) {
         if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     revealEls.forEach(function (el) { io.observe(el); });
   } else {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
@@ -63,26 +45,6 @@
       });
     }, { threshold: 0.4 });
     counters.forEach(function (el) { cio.observe(el); });
-  }
-
-  // Active section → tabbar + header nav
-  var sections = ['top', 'leistungen', 'projekte', 'berichte', 'kontakt'];
-  var links = document.querySelectorAll('.tabs__item, .hd__link');
-  if ('IntersectionObserver' in window && document.body.classList.contains('page-home')) {
-    var current = 'top';
-    var sio = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) current = e.target.id || 'top';
-      });
-      links.forEach(function (l) {
-        var href = l.getAttribute('href') || '';
-        l.classList.toggle('is-active', href.indexOf('#' + current) !== -1);
-      });
-    }, { rootMargin: '-40% 0px -55% 0px' });
-    sections.forEach(function (id) {
-      var el = document.getElementById(id);
-      if (el) sio.observe(el);
-    });
   }
 
   // Project filter
@@ -156,7 +118,7 @@
       ev.preventDefault();
       var btn = form.querySelector('button[type="submit"]');
       btn.disabled = true;
-      btn.querySelector('span').textContent = 'Wird gesendet …';
+      btn.textContent = 'Wird gesendet …';
       fetch(form.action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
@@ -164,10 +126,10 @@
       }).then(function (r) { return r.json(); }).then(function () {
         form.querySelector('.cform__success').hidden = false;
         form.querySelectorAll('input, textarea').forEach(function (i) { i.value = ''; });
-        btn.querySelector('span').textContent = '✓ Gesendet';
+        btn.textContent = 'Gesendet ✓';
       }).catch(function () {
         btn.disabled = false;
-        btn.querySelector('span').textContent = 'Anfrage absenden';
+        btn.textContent = 'Anfrage senden';
         alert('Senden fehlgeschlagen — bitte rufen Sie direkt an.');
       });
     });
