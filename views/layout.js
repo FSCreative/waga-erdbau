@@ -43,8 +43,7 @@ function layout({ title, description = '', active = '', settings, content, bodyC
 <header class="site-header" data-header>
   <div class="container site-header__inner">
     <a class="brand" href="/" aria-label="${esc(s.site_name)} – Startseite">
-      <img src="/assets/img/logo.png" alt="${esc(s.site_name)} Logo" class="brand__img" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-      <span class="brand__fallback" style="display:none">WAGA <b>ERDBAU</b></span>
+      <span class="brand__fallback">WAGA <b>ERDBAU</b></span>
     </a>
     <nav class="main-nav" aria-label="Hauptnavigation">
       ${NAV.map((n) => `<a href="${n.href}" class="main-nav__link${active === n.href ? ' is-active' : ''}">${n.label}</a>`).join('')}
