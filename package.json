@@ -1,0 +1,13 @@
+{
+  "name": "waga-erdbau",
+  "version": "1.0.0",
+  "description": "WAGA Erdbau – Website mit Admin-Bereich (Zero-Dependency Node.js + SQLite)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "license": "UNLICENSED"
+}
