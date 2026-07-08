@@ -73,16 +73,24 @@ async function handle(req, res) {
 
   // ---------- public pages ----------
   if (method === 'GET') {
-    if (p === '/') return send(res, 200, pages.indexPage({ settings, projects: q.projects.all(), posts: q.posts.allPublished() }));
-    if (p === '/leistungen') return send(res, 200, pages.leistungenPage({ settings }));
-    if (p === '/projekte') return send(res, 200, pages.projektePage({ settings, projects: q.projects.all(), categories: q.projects.categories() }));
-    if (p === '/ueber-mich' || p === '/über-mich') return send(res, 200, pages.ueberMichPage({ settings }));
+    if (p === '/') {
+      return send(res, 200, pages.indexPage({
+        settings,
+        projects: q.projects.all(),
+        posts: q.posts.allPublished(),
+        categories: q.projects.categories(),
+      }));
+    }
+    // Alte Unterseiten → One-Pager-Anker
+    if (p === '/leistungen') return redirect(res, '/#leistungen');
+    if (p === '/projekte') return redirect(res, '/#projekte');
+    if (p === '/ueber-mich' || p === '/über-mich') return redirect(res, '/#person');
+    if (p === '/kontakt') return redirect(res, '/#kontakt');
     if (p === '/berichte') return send(res, 200, pages.berichtePage({ settings, posts: q.posts.allPublished() }));
     if (p.startsWith('/berichte/')) {
       const post = q.posts.bySlug(p.slice('/berichte/'.length));
       if (post && post.published) return send(res, 200, pages.berichtPage({ settings, post }));
     }
-    if (p === '/kontakt') return send(res, 200, pages.kontaktPage({ settings }));
     if (p === '/health') return send(res, 200, 'ok', { 'Content-Type': 'text/plain' });
   }
 
