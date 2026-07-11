@@ -1,14 +1,12 @@
-/* WAGA ERDBAU — Premium interactions */
+/* WAGA ERDBAU — Apple-like interactions */
 (function () {
   'use strict';
 
-  // Header border on scroll
-  var header = document.querySelector('[data-header]');
-  var onScroll = function () {
-    if (header) header.classList.toggle('is-scrolled', window.scrollY > 24);
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  // Hero image settles (subtle scale-down) once visible
+  var heroMedia = document.querySelector('[data-hero-media]');
+  if (heroMedia) {
+    setTimeout(function () { heroMedia.classList.add('is-settled'); }, 500);
+  }
 
   // Reveal on scroll
   var revealEls = document.querySelectorAll('.reveal');
@@ -47,17 +45,30 @@
     counters.forEach(function (el) { cio.observe(el); });
   }
 
-  // Project filter
+  // Carousel arrows
+  document.querySelectorAll('[data-carousel]').forEach(function (c) {
+    var track = c.querySelector('[data-carousel-track]');
+    var step = function () {
+      var card = track.querySelector('.pcard');
+      return card ? card.getBoundingClientRect().width + 20 : 400;
+    };
+    var prev = c.querySelector('[data-carousel-prev]');
+    var next = c.querySelector('[data-carousel-next]');
+    if (prev) prev.addEventListener('click', function () { track.scrollBy({ left: -step(), behavior: 'smooth' }); });
+    if (next) next.addEventListener('click', function () { track.scrollBy({ left: step(), behavior: 'smooth' }); });
+  });
+
+  // Project filter (segmented control)
   var filterBar = document.querySelector('[data-filter-bar]');
   if (filterBar) {
     var grid = document.querySelector('[data-project-grid]');
     filterBar.addEventListener('click', function (ev) {
-      var btn = ev.target.closest('.pfilter__btn');
+      var btn = ev.target.closest('.seg__btn');
       if (!btn) return;
-      filterBar.querySelectorAll('.pfilter__btn').forEach(function (b) { b.classList.remove('is-active'); });
+      filterBar.querySelectorAll('.seg__btn').forEach(function (b) { b.classList.remove('is-active'); });
       btn.classList.add('is-active');
       var f = btn.getAttribute('data-filter');
-      grid.querySelectorAll('.proj').forEach(function (card) {
+      grid.querySelectorAll('.pcard').forEach(function (card) {
         card.classList.toggle('is-hidden', !(f === '*' || card.getAttribute('data-category') === f));
       });
     });
