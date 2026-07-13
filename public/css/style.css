@@ -271,6 +271,16 @@ h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); }
 }
 .cform input:focus, .cform textarea:focus { outline: none; background: #fff; border-color: var(--accent); }
 .cform__success { margin-top: 1rem; color: #1c7c3c; font-weight: 500; }
+.cform__consent {
+  display: flex !important; flex-direction: row !important; align-items: flex-start; gap: .6rem !important;
+  font-size: .82rem !important; font-weight: 400 !important; text-transform: none !important;
+  color: var(--muted); line-height: 1.5; margin-bottom: 1.2rem; max-width: 34rem;
+}
+.cform__consent input { width: 1.05rem; height: 1.05rem; margin-top: .15rem; accent-color: var(--accent); flex: none; }
+.cform__consent a { color: var(--accent); text-decoration: underline; }
+.ft__legal a { margin-left: .1rem; }
+.legal h3 { font-size: 1.25rem; }
+.legal h4 { margin: 1.4rem 0 .4rem; }
 
 /* ---------- Artikel ---------- */
 .article { padding: calc(var(--nav-h) + clamp(3rem, 8vh, 5.5rem)) 0 clamp(4rem, 8vw, 6rem); }
