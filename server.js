@@ -90,6 +90,8 @@ async function handle(req, res) {
       const post = q.posts.bySlug(p.slice('/berichte/'.length));
       if (post && post.published) return send(res, 200, pages.berichtPage({ settings, post }));
     }
+    if (p === '/impressum') return send(res, 200, pages.legalPage({ settings, kind: 'impressum' }));
+    if (p === '/datenschutz') return send(res, 200, pages.legalPage({ settings, kind: 'datenschutz' }));
     if (p === '/health') return send(res, 200, 'ok', { 'Content-Type': 'text/plain' });
   }
 
