@@ -18,7 +18,7 @@ function adminLayout({ title, active, content, unread = 0, flash = '' }) {
 <title>${esc(title)} | WAGA Admin</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
 <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
@@ -52,7 +52,7 @@ function loginPage({ error = '' } = {}) {
 <title>Login | WAGA Admin</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
 <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body class="login-body">
@@ -201,6 +201,8 @@ const TEXT_FIELDS = [
   ['contact_email', 'Kontakt: E-Mail', 'input'],
   ['contact_phone', 'Kontakt: Telefon', 'input'],
   ['footer_text', 'Fußzeile', 'input'],
+  ['legal_impressum', 'Impressum (Markdown — Platzhalter in [Klammern] bitte ausfüllen!)', 'textarea'],
+  ['legal_datenschutz', 'Datenschutzerklärung (Markdown)', 'textarea'],
 ];
 
 function textePage({ settings, unread, flash }) {

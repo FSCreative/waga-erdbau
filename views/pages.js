@@ -14,6 +14,10 @@ function contactForm() {
       <label class="cform__full">Betreff<input name="subject" placeholder="z. B. Aushub Einfamilienhaus"></label>
       <label class="cform__full">Nachricht<textarea name="message" rows="5" required placeholder="Beschreiben Sie kurz Ihr Projekt …"></textarea></label>
     </div>
+    <label class="cform__consent">
+      <input type="checkbox" required>
+      <span>Ich habe die <a href="/datenschutz">Datenschutzerklärung</a> gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu.</span>
+    </label>
     <button type="submit" class="btn btn--fill btn--lg">Anfrage senden</button>
     <p class="cform__success" hidden>Vielen Dank — Ihre Anfrage ist eingegangen. Sie hören rasch von mir.</p>
   </form>`;
@@ -297,6 +301,26 @@ ${pageHero('Kontakt', 'Sprechen wir<br>über Ihr Projekt.', 'Rufen Sie an, schre
   return layout({ title: 'Kontakt', active: '/kontakt', settings: s, content });
 }
 
+// ---------- Rechtliches ----------
+function legalPage({ settings: s, kind }) {
+  const isImpressum = kind === 'impressum';
+  const content = `
+<article class="article">
+  <div class="wrap wrap--narrow">
+    <h1 class="reveal-now">${isImpressum ? 'Impressum.' : 'Datenschutz.'}</h1>
+    <div class="article__body legal reveal-now" style="--d:80ms">
+      ${markdown(isImpressum ? s.legal_impressum : s.legal_datenschutz)}
+    </div>
+  </div>
+</article>`;
+  return layout({
+    title: isImpressum ? 'Impressum' : 'Datenschutzerklärung',
+    description: isImpressum ? 'Impressum von WAGA Erdbau' : 'Datenschutzerklärung von WAGA Erdbau',
+    settings: s,
+    content,
+  });
+}
+
 function notFoundPage({ settings: s }) {
   const content = `
 ${pageHero('Fehler 404', 'Seite nicht gefunden.', 'Diese Seite existiert nicht (mehr).')}
@@ -304,4 +328,4 @@ ${pageHero('Fehler 404', 'Seite nicht gefunden.', 'Diese Seite existiert nicht (
   return layout({ title: 'Seite nicht gefunden', settings: s, content });
 }
 
-module.exports = { indexPage, leistungenPage, projektePage, ueberMichPage, berichtePage, berichtPage, kontaktPage, notFoundPage };
+module.exports = { indexPage, leistungenPage, projektePage, ueberMichPage, berichtePage, berichtPage, kontaktPage, legalPage, notFoundPage };

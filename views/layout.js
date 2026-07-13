@@ -32,9 +32,7 @@ function layout({ title, description = '', active = '', settings, content, bodyC
 <meta name="description" content="${esc(description || s.hero_subtitle)}">
 <meta name="theme-color" content="#fbfbfd">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="${bodyClass}">
@@ -74,7 +72,7 @@ ${content}
     </div>
     <div class="ft__base">
       <span>${esc(s.footer_text)}</span>
-      <a href="/admin" class="ft__admin">Admin</a>
+      <span class="ft__legal"><a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a> · <a href="/admin" class="ft__admin">Admin</a></span>
     </div>
   </div>
 </footer>
