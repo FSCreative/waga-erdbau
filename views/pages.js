@@ -310,6 +310,7 @@ function legalPage({ settings: s, kind }) {
     <h1 class="reveal-now">${isImpressum ? 'Impressum.' : 'Datenschutz.'}</h1>
     <div class="article__body legal reveal-now" style="--d:80ms">
       ${markdown(isImpressum ? s.legal_impressum : s.legal_datenschutz)}
+      ${isImpressum ? '<p>Bei der Erstellung dieser Website wurden teilweise KI-gestützte Werkzeuge eingesetzt. Alle Inhalte wurden redaktionell geprüft.</p>' : ''}
     </div>
   </div>
 </article>`;
